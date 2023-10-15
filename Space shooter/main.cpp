@@ -3,13 +3,15 @@
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
 #include <fstream>
-
+#include <string>
 
 
 #include "player.h"
 #include "Global.h"
 #include "astroids.h"
 #include "fps.h"
+#include "Animation.h"
+
 
 
 
@@ -23,6 +25,18 @@ int main() {
     float spawnInterval = 0.f;
     float spawnTimer = 2.f;
     int score = 10;
+    int highScore = 0; //high schore variable
+
+    //opens the file and gets whatever the highscore is from that file
+     std::ifstream highScoreFile("data/score.dat");
+     if (highScoreFile.is_open()) {
+         highScoreFile >> highScore;
+         highScoreFile.close();
+     }
+
+    
+    
+
     //framerate
     FPS fps;
     sf::Text fpsNum;
@@ -33,6 +47,7 @@ int main() {
     fpsNum.setFillColor(sf::Color::Black);
     fpsNum.setPosition(0, 0);
 
+    //scoretext
     sf::Text scoreText;
     scoreText.setFont(font);
 
@@ -41,28 +56,41 @@ int main() {
     scoreText.setCharacterSize(24);
     scoreText.setPosition(0, 650);
     scoreText.setFillColor(Color::Black);
+    //high score
+    sf::Text highscoreText;
+    highscoreText.setFont(font);
+    highscoreText.setString("High score: ");
+    highscoreText.setCharacterSize(10);
+    highscoreText.setPosition(0, 680);
+    highscoreText.setFillColor(sf::Color::Black);
+
 
 
     //points
 
 
 
-    //TODO: *MOVEMENT AND ROTATION -> -> *SHOOTING -> **ASTROID SPAWNING -> *-DYING TO ASTROIDS -> CAMERA(X)-> *POINT SYSTEM -> AWARD SYSTEM(HIGH SCORE AND MORE POWER ITEMS) -> END GAME (BOSS ONCE YOU HIT A CERTAIN SCORE)-> LEVELS (BACKGROUND) ->
+    //TODO: -MOVEMENT AND ROTATION -> -> -SHOOTING -> -ASTROID SPAWNING -> *-DYING TO ASTROIDS -> CAMERA(X)-> -POINT SYSTEM -> AWARD SYSTEM(HIGH SCORE AND MORE POWER ITEMS) -> END GAME (BOSS ONCE YOU HIT A CERTAIN SCORE)->? LEVELS (BACKGROUND) ->
     //GO BACK TO THRUST AT SOME POINT HAVE AN FUEL SYSTEM FOR YOUR THRUST
     //MAKE WHATEVER THE HELL THE BACKGROUND SCROLLING IS BETTER :D (DONE)
     //properly add a dying system
-    //add animations
+    //add Animation
+    //change the score.dat file pushing shipping to github
 
 
 
     //Game assets
     player ship("Assets/ship.png");
+    Animation animation(&ship.playerTexture, sf::Vector2u(8, 8), 10.f); //animation the floating value messes with 5he times between ever framee
+    
+
+
     ship.playerGoingUp = false;
     Speedastroids power("Assets/Astroid.png");
     Texture bulletTexture;
     if (!bulletTexture.loadFromFile("Assets/bullet.png"))
     {
-        std::cout << "Load failed" << std::endl;
+        std::cout << "Load failed" << '\n';
         system("pause");
 
     }
@@ -71,18 +99,19 @@ int main() {
     bullet.setTexture(bulletTexture);
     bullet.setTextureRect(IntRect(0, 0, 16, 16));
     bullet.setScale(Vector2f(2, 2));
-   // float bulletLocation = ship.playerSprite.getPosition();
-    int bulletdmg = 5; //future ref
+    int bulletdmg = 5;
 
     std::vector<sf::Sprite> bullets;
     bullets.push_back(sf::Sprite(bullet));
+    Animation animation1 (&bulletTexture, sf::Vector2u(16, 16), 0.2f);
+
 
 
     //enemy class:
     Texture enemyTexture;
     if (!enemyTexture.loadFromFile("Assets/Astroid.png"))
     {
-        std::cout << "Load failed" << std::endl;
+        std::cout << "Load failed" << '\n';
 
         system("pause");
     }
@@ -98,7 +127,7 @@ int main() {
     sf::Texture backgroundTexture;
     if (!backgroundTexture.loadFromFile("Assets/background.png")) {
         // Handle error loading texture
-        std::cout << "Load failed" << std::endl;
+        std::cout << "Load failed" << '\n';
 
         system("pause");
     }
@@ -114,17 +143,25 @@ int main() {
         sf::Event event;
         while (window.pollEvent(event))
         {
-            // "close requested" event: we close the window
+           
             deltaTime = clock.restart().asSeconds();
-
+            if (score > highScore) {
+                highScore = score;
+                std::ofstream highScoreFile("data/score.dat");
+                if (highScoreFile.is_open()) {
+                    highScoreFile << highScore;
+                    highScoreFile.close();
+                }
+            }
+            // "close requested" event: we close the window
             if (event.type == sf::Event::Closed)
 
                 window.close();
+
         }
 
         //updating the framerate to print onto the window
         fps.update();
-        // std::cout << fps.getFPS() << std::endl;
         std::ostringstream ss;
         ss << fps.getFPS();
         fpsNum.setString(ss.str());
@@ -141,8 +178,6 @@ int main() {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
             ship.movement("DOWN");
 
-        //if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
-          //  ship.movement("THRUST");
 
 
 
@@ -227,8 +262,7 @@ int main() {
 
                         }
                         power.Speedastroids_m.erase(power.Speedastroids_m.begin() + k);
-                      //  ship.playerHealth = ship.playerHealth + 5 ;
-                        //std::cout << "Health: " << ship.playerHealth << std::endl;
+                      
                         break; //breaks the loop
                     }
                 }
@@ -249,12 +283,24 @@ int main() {
 
                     if (bullets[i].getGlobalBounds().intersects(enemies[k].getGlobalBounds()))
                     {
-                        std::cout << "ROCK DESTROYED\n";
+                        
 
-                        scoreText.setString("Score: " + std::to_string(score));
                         score = score + 10;
+                        scoreText.setString("Score: " + std::to_string(score));
                         bullets.erase(bullets.begin() + i);
                         enemies.erase(enemies.begin() + k);
+                        std::cout << "ROCK DESTROYED\n";
+                       
+
+
+                        
+
+
+
+                        
+
+
+                        
                         
                         break; //breaks the loop
                     }
@@ -264,11 +310,13 @@ int main() {
         //Collision with astroid 
         for (size_t y = 0; y < enemies.size(); y++){
             if(ship.playerSprite.getGlobalBounds().intersects(enemies[y].getGlobalBounds())){
-            std::cout << "SHIP HIT\n";
             ship.playerHealth = ship.playerHealth - enemyDamage;
-           // ship.takeDamage(enemyDamage);
+            enemies.erase(enemies.begin() + y);
+            std::cout << "SHIP HIT\n";
 
-           // std::cout << "Health: " << ship.playerHealth << std::endl;
+            ship.takeDamage(enemyDamage);
+
+          // std::cout << "Health: " << ship.playerHealth << '\n';
             //ship.playerSprite.setTextureRect(sf::IntRect(0, 0, 32, 32));
 
                }
@@ -277,15 +325,16 @@ int main() {
         
         if (ship.playerHealth<=0) {
 
-            ship.playerHealth = 25; //touch up on this
-            ship.takeDamage(enemyDamage);
+           // ship.playerHealth = 3; //touch up on this
+            //ship.takeDamage(enemyDamage);
             
-            //  exit(EXIT_SUCCESS); //temporary will show game score after
+              exit(EXIT_SUCCESS); //temporary will show game score after
             
 
         }
         
-       
+        
+        
        
         // Wrap the player around the screen
         if (ship.playerSprite.getPosition().x > window.getSize().x) {
@@ -301,11 +350,13 @@ int main() {
             ship.playerSprite.setPosition(ship.playerSprite.getPosition().x, window.getSize().y);
         }
 
+        //highscore to window
+        highscoreText.setString("High Score: " + std::to_string(highScore));
+
 
         
-
-
-
+        ship.playerSprite.setTextureRect(animation.uvRect);
+        animation.Update(0, deltaTime);
         window.clear();
         window.draw(background);
         ship.drawPlayer(window);
@@ -340,6 +391,7 @@ int main() {
         
         window.draw(fpsNum); //draws the fps
         window.draw(scoreText);
+        window.draw(highscoreText);
 
         window.display();
     }

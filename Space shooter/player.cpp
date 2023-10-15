@@ -28,6 +28,7 @@ void player::movement(std::string direction)
 		playerSprite.move(playerSpeed += PLAYER_ACCELERATION, 0);
 		//playerSprite.rotate(playerSpeed+=PLAYER_ACCELERATION);
 		//playerSprite.rotate(playerAngle += rotationRate);
+		//playerSprite.setRotation(0);
 		if (playerSpeed > PLAYER_MAX_SPEED)
 		{
 			playerSpeed = PLAYER_MAX_SPEED;
@@ -37,6 +38,7 @@ void player::movement(std::string direction)
 		playerSprite.move(playerSpeed -= PLAYER_ACCELERATION, 0);
 		//playerSprite.rotate(playerSpeed-+PLAYER_ACCELERATION);
 		//playerSprite.rotate(playerAngle -= rotationRate);
+		//playerSprite.setRotation(180);
 		if (playerSpeed < -PLAYER_MAX_SPEED) {
 			playerSpeed = -PLAYER_MAX_SPEED;
 		}
@@ -61,8 +63,9 @@ void player::movement(std::string direction)
 
 		if (direction == "UP") {
 			playerSprite.move(0, playerSpeed -= PLAYER_ACCELERATION);
-			playerSprite.setRotation(360);
+			//playerSprite.setRotation(360);
 			playerGoingUp = true;
+			//playerSprite.setTextureRect(sf::IntRect(16, 16, 31, 31));
 			if (playerGoingUp = true) {
 				std::cout << "UP\n";
 			}
@@ -73,7 +76,7 @@ void player::movement(std::string direction)
 
 		else if (direction == "DOWN") {
 			playerSprite.move(0, playerSpeed += PLAYER_ACCELERATION);
-			playerSprite.setRotation(0);
+			//playerSprite.setRotation(0);
 			if (playerSpeed < PLAYER_MAX_SPEED)
 				playerSpeed = PLAYER_MAX_SPEED;
 		}
@@ -103,7 +106,8 @@ void player::movement(std::string direction)
 
 void player::takeDamage(int damage)
 {
-	playerHealth -= damage;
+	//playerHealth -= damage; increments the damage
+	playerHealth - damage;
 	// Remove a heart sprite from the array
 	if (!health.empty()) {
 		health.pop_back();
@@ -115,9 +119,4 @@ void player::takeDamage(int damage)
 
 }
 
-void player::updateIdleAnimation()
-{
-	
-	
 
-}
