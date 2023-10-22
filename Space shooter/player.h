@@ -34,7 +34,6 @@ public:
 	sf::Vector2f playerCenter;
 	int shootTimer = 0;
 	bool isAlive = true;
-	int playerHealth = 3;
 	std::vector<sf::Sprite> ship;
 	bool playerGoingUp = false;
 	sf::Vector2f playerPosition;
@@ -42,7 +41,7 @@ public:
 	float deltaTime = 0.f;
 
 	
-	int maxHearts = 3; //the amount of hearts shown on screen
+	int maxHealth = 3; //the amount of hearts shown on screen
 
 
 
@@ -83,7 +82,7 @@ public:
 		if (!healthBarTexture.loadFromFile("Assets/health.png")) {
 			// Handle error
 		}
-		for (int i = 0; i < maxHearts; ++i){
+		for (int i = 0; i < maxHealth; ++i){
 		healthBar.setTexture(healthBarTexture);
 		healthBar.setTextureRect(sf::IntRect(0, 0, 16, 16));
 		healthBar.setPosition(10+i*healthBar.getGlobalBounds().width, 630);
@@ -95,6 +94,7 @@ public:
 		void drawPlayer(sf::RenderWindow & window);
 		void movement(std::string direction);
 		void takeDamage(int damage);
+		void heal(int heal);
 
 private:
 	

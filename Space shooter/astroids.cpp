@@ -2,7 +2,6 @@
 
 void Speedastroids::draw(sf::RenderWindow& window)
 {
-    // window.draw(astroid);
     Speedastroids_m.push_back(sf::Sprite(Speedastroid));
 
     if (astroidSpawner < spawnRand)

@@ -107,7 +107,7 @@ void player::movement(std::string direction)
 void player::takeDamage(int damage)
 {
 	//playerHealth -= damage; increments the damage
-	playerHealth - damage;
+	maxHealth -= damage;
 	// Remove a heart sprite from the array
 	if (!health.empty()) {
 		health.pop_back();
@@ -115,6 +115,27 @@ void player::takeDamage(int damage)
 
 	//int heartsToRemove = maxHearts / 1;
 	
+
+
+}
+
+
+void player::heal(int healing)
+{
+	maxHealth += healing;
+
+	// Make sure playerHealth doesn't exceed 3 hearts
+	if (maxHealth > 3) {
+		maxHealth = 3;
+	}
+
+	// Add a heart sprite to the array for each point of healing
+	for (int i = 0; i < healing; ++i) {
+		// Add a heart sprite to the 'health' array (assuming you have a way to do this)
+		
+		health.push_back(healthBar);
+
+	}
 
 
 }

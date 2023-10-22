@@ -22,7 +22,9 @@ public:
 	Sprite Speedastroid;
 	int astroidSpawner = 0;
 	std::vector<sf::Sprite> Speedastroids_m;
-	int spawnRand = rand() % 10000 + 1000;
+	int spawnRand = rand() % 10000+ 800;
+
+
 
        
 
@@ -40,6 +42,15 @@ public:
 		Speedastroid.setScale(Vector2f(2, 2));
 		//astroid.setPosition(Vector2f(Screenwidth / 2, Screenheight / 2));
 
+
+
+		
+
+
+
+
+
+		
 		
 			
 

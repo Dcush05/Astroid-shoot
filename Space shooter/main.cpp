@@ -11,6 +11,7 @@
 #include "astroids.h"
 #include "fps.h"
 #include "Animation.h"
+#include "healing.h"
 
 
 
@@ -59,7 +60,7 @@ int main() {
     //high score
     sf::Text highscoreText;
     highscoreText.setFont(font);
-    highscoreText.setString("High score: ");
+    highscoreText.setString("High score: 0 ");
     highscoreText.setCharacterSize(10);
     highscoreText.setPosition(0, 680);
     highscoreText.setFillColor(sf::Color::Black);
@@ -70,23 +71,38 @@ int main() {
 
 
 
-    //TODO: -MOVEMENT AND ROTATION -> -> -SHOOTING -> -ASTROID SPAWNING -> *-DYING TO ASTROIDS -> CAMERA(X)-> -POINT SYSTEM -> AWARD SYSTEM(HIGH SCORE AND MORE POWER ITEMS) -> END GAME (BOSS ONCE YOU HIT A CERTAIN SCORE)->? LEVELS (BACKGROUND) ->
+    //TODO: -MOVEMENT AND ROTATION -> -> -SHOOTING -> -ASTROID SPAWNING -> *-DYING TO ASTROIDS -> CAMERA(X)-> -POINT SYSTEM -> -AWARD SYSTEM(HIGH SCORE AND MORE POWER ITEMS) -> END GAME (BOSS ONCE YOU HIT A CERTAIN SCORE)->? LEVELS (BACKGROUND) ->
     //GO BACK TO THRUST AT SOME POINT HAVE AN FUEL SYSTEM FOR YOUR THRUST
     //MAKE WHATEVER THE HELL THE BACKGROUND SCROLLING IS BETTER :D (DONE)
     //properly add a dying system
     //add Animation
     //change the score.dat file pushing shipping to github
+    //fix healing system
 
 
 
     //Game assets
     player ship("Assets/ship.png");
-    Animation animation(&ship.playerTexture, sf::Vector2u(8, 8), 10.f); //animation the floating value messes with 5he times between ever framee
+    Animation animation(&ship.playerTexture, sf::Vector2u(8, 8), 3.f); //animation the floating value messes with 5he times between ever framee
     
 
 
     ship.playerGoingUp = false;
     Speedastroids power("Assets/Astroid.png");
+    healing healing("Assets/Astroid.png");
+    
+    sf::Texture healastroidTexture;
+    if (!healastroidTexture.loadFromFile("Assets/astroid.png")) {
+        std::cout << "Error/n";
+
+
+
+    }
+
+
+
+
+
     Texture bulletTexture;
     if (!bulletTexture.loadFromFile("Assets/bullet.png"))
     {
@@ -268,6 +284,40 @@ int main() {
                 }
             }
         }
+        //bullet colision for healing
+        if (!healing.healingSprites_m.empty() && !bullets.empty()) {
+            for (size_t i = 0; i < bullets.size(); i++) {
+
+                for (size_t k = 0; k < healing.healingSprites_m.size(); k++) {
+
+                    if (bullets[i].getGlobalBounds().intersects(healing.healingSprites_m[k].getGlobalBounds())) {
+
+                        ship.heal(healing.healingAmount);
+                        bullets.erase(bullets.begin() + i);
+                       // ship.playerHealth = ship.playerHealth + healing.heal; //doesnt work find fix plz
+                        healing.healingSprites_m.erase(healing.healingSprites_m.begin() + k);
+                        
+                        //std::cout << ship.playerHealth << '\n'; 
+
+                        break;
+
+
+                    }
+
+
+
+                }
+
+
+
+
+
+            }
+
+
+
+
+        }
 
         //Collision for enemy bad stupid astroids
 
@@ -310,7 +360,6 @@ int main() {
         //Collision with astroid 
         for (size_t y = 0; y < enemies.size(); y++){
             if(ship.playerSprite.getGlobalBounds().intersects(enemies[y].getGlobalBounds())){
-            ship.playerHealth = ship.playerHealth - enemyDamage;
             enemies.erase(enemies.begin() + y);
             std::cout << "SHIP HIT\n";
 
@@ -323,7 +372,7 @@ int main() {
 
         }
         
-        if (ship.playerHealth<=0) {
+        if (ship.maxHealth<=0) {
 
            // ship.playerHealth = 3; //touch up on this
             //ship.takeDamage(enemyDamage);
@@ -387,8 +436,14 @@ int main() {
 
 
         }
+        for (size_t i = 0; i < healing.healingSprites_m.size(); i++) {
+            window.draw(healing.healingSprites_m[i]);
+
+
+        }
+
         
-        
+        healing.draw(window);
         window.draw(fpsNum); //draws the fps
         window.draw(scoreText);
         window.draw(highscoreText);
